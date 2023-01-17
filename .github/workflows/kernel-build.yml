@@ -38,9 +38,10 @@ jobs:
             -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" 
             LD_LIBRARY_PATH="$HOME/toolchains/{compiler}/lib" make distclean defconfig all -j$(nproc --all) LLVM="$HOME/toolchains/{compiler}/bin" LLVM_IAS=1' -c 'make distclean' \
             --export-json x86.json
+      - name: Upload Result
         uses: actions/upload-artifact@v3
-        with: x86-artifact
-        path: ~/linux-${{ steps.kernel.outputs.krel }}/x86.json
+        with:
+          path: ~/linux-${{ steps.kernel.outputs.krel }}/x86.json
 
   build-arm64:
     runs-on: ubuntu-latest
@@ -71,9 +72,10 @@ jobs:
             -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" 
             LD_LIBRARY_PATH="$HOME/toolchains/{compiler}/lib" make distclean defconfig all -j$(nproc --all) ARCH=arm64 LLVM="$HOME/toolchains/{compiler}/bin" LLVM_IAS=1' -c 'make distclean' \
             --export-json arm64.json
+      - name: Upload Result
         uses: actions/upload-artifact@v3
-        with: arm64-artifact
-        path: ~/linux-${{ steps.kernel.outputs.krel }}/arm64.json
+        with:
+          path: ~/linux-${{ steps.kernel.outputs.krel }}/arm64.json
 
   build-arm:
     runs-on: ubuntu-latest
@@ -105,6 +107,7 @@ jobs:
             -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" 
             LD_LIBRARY_PATH="$HOME/toolchains/{compiler}/lib" make distclean defconfig all -j$(nproc --all) ARCH=arm LLVM="$HOME/toolchains/{compiler}/bin" LLVM_IAS=1' -c 'make distclean' \
             --export-json arm.json
+      - name: Upload Result
         uses: actions/upload-artifact@v3
-        with: arm-artifact
-        path: ~/linux-${{ steps.kernel.outputs.krel }}/arm.json
+        with:
+          path: ~/linux-${{ steps.kernel.outputs.krel }}/arm.json
