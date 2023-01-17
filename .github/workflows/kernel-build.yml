@@ -24,15 +24,16 @@ jobs:
 
       - name: Prep
         run: |
+          cd $HOME
           wget "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${{ steps.kernel.outputs.krel }}.tar.xz"
           tar xf "linux-${{ steps.kernel.outputs.krel }}.tar.xz"
           rm -rf "linux-${{ steps.kernel.outputs.krel }}.tar.xz"
       - name: Compile
         run: |
-          source compiler.list
+          cd $HOME
+          source <(curl -s "https://raw.githubusercontent.com/dakkshesh07/compiler-bench/main/compiler.list")
           for i in "${!compilers[@]}"; do   ${compilers[$i]}; done
           compiler_list="${compilers[0]}"
-          cd $HOME
           cd "linux-${{ steps.kernel.outputs.krel }}"
           hyperfine -w 1 -r 3 -p '(sync; echo 3 | sudo tee /proc/sys/vm/drop_caches) && make distclean' \
             -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" 
@@ -58,15 +59,16 @@ jobs:
 
       - name: Prep
         run: |
+          cd $HOME
           wget "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${{ steps.kernel.outputs.krel }}.tar.xz"
           tar xf "linux-${{ steps.kernel.outputs.krel }}.tar.xz"
           rm -rf "linux-${{ steps.kernel.outputs.krel }}.tar.xz"
       - name: Compile
         run: |
-          source compiler.list
+          cd $HOME
+          source <(curl -s "https://raw.githubusercontent.com/dakkshesh07/compiler-bench/main/compiler.list")
           for i in "${!compilers[@]}"; do   ${compilers[$i]}; done
           compiler_list="${compilers[0]}"
-          cd $HOME
           cd "linux-${{ steps.kernel.outputs.krel }}"
           hyperfine -w 1 -r 3 -p '(sync; echo 3 | sudo tee /proc/sys/vm/drop_caches) && make distclean' \
             -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" 
@@ -98,10 +100,10 @@ jobs:
           rm -rf "linux-${{ steps.kernel.outputs.krel }}.tar.xz"
       - name: Compile
         run: |
-          source compiler.list
+          cd $HOME
+          source <(curl -s "https://raw.githubusercontent.com/dakkshesh07/compiler-bench/main/compiler.list")
           for i in "${!compilers[@]}"; do   ${compilers[$i]}; done
           compiler_list="${compilers[0]}"
-          cd $HOME
           cd "linux-${{ steps.kernel.outputs.krel }}"
           hyperfine -w 1 -r 3 -p '(sync; echo 3 | sudo tee /proc/sys/vm/drop_caches) && make distclean' \
             -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" 
