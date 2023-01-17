@@ -1,4 +1,10 @@
-compilers=("neutron","proton","weebx","trb","cosmic","nfs","r475365b")
+compilers=("proton"
+	   "neutron"
+	   "weebx"
+	   "trb"
+	   "cosmic"
+	   "nfs"
+	   "r475365b")
 
 neutron() {
 	mkdir -p "$HOME/toolchains/neutron"
