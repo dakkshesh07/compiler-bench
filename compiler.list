@@ -1,0 +1,38 @@
+compilers=("neutron","proton","weebx","trb","cosmic","nfs","r475365b")
+
+neutron() {
+	mkdir -p "$HOME/toolchains/neutron"
+	cd "$HOME/toolchains/neutron"
+	bash <(curl -s https://raw.githubusercontent.com/Neutron-Toolchains/antman/main/antman) -S
+	cd -
+}
+
+git_repo_clone() {
+	git clone ${1} "$HOME/toolchains/${2}" ${3} --depth=1
+}
+
+proton() {
+	git_repo_clone "https://github.com/kdrag0n/proton-clang.git" "proton"
+}
+
+weebx() {
+	cd "$HOME/toolchains"
+	wget "$(curl -s https://raw.githubusercontent.com/XSans0/WeebX-Clang/main/16.0.0/link.txt)" -O "weebx-clang.tar.gz"
+	mkdir clang && tar -xf weebx-clang.tar.gz -C weebx && rm -rf weebx-clang.tar.gz
+}
+
+trb() {
+	git_repo_clone "https://gitlab.com/varunhardgamer/trb_clang.git" "trb"
+}
+
+cosmic() {
+	git_repo_clone "https://gitlab.com/GhostMaster69-dev/cosmic-clang.git" "cosmic"
+}
+
+nfs() {
+	git_repo_clone "https://pf.osdn.net/gitroot/n/nf/nfs86/NFS-clang.git" "nfs"
+}
+
+r475365b() {
+	git_repo_clone "https://gitlab.com/ThankYouMario/android_prebuilts_clang-standalone.git" "r475365b" "-b 16"
+}
