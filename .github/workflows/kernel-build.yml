@@ -33,11 +33,15 @@ jobs:
           cd $HOME
           source <(curl -s "https://raw.githubusercontent.com/dakkshesh07/compiler-bench/main/compiler.list")
           for i in "${!compilers[@]}"; do   ${compilers[$i]}; done
-          compiler_list="${compilers[0]}"
+          printf -v compiler_list '%s,' "${compilers[@]}"
+          compiler_list=${compiler_list%,}
           cd "linux-${{ steps.kernel.outputs.krel }}"
           wget "https://raw.githubusercontent.com/Neutron-Toolchains/clang-build/main/patches/linux/6.1.6/20221118_yingchi_x86_fpu_Use__Alignof_to_avoid_undefined_behavior_in_TYPE_ALIGN.patch"
           patch -p1 < "20221118_yingchi_x86_fpu_Use__Alignof_to_avoid_undefined_behavior_in_TYPE_ALIGN.patch"
-          hyperfine -w 1 -r 3 -p '(sync; echo 3 | sudo tee /proc/sys/vm/drop_caches) && make distclean' \
+          echo Caching kernel source in ram...
+          for i in `find -type f`;        do              cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;     done
+          echo Starting benchmark...
+          hyperfine -w 2 -r 3 -p 'make distclean' \
             -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" 
             LD_LIBRARY_PATH="$HOME/toolchains/{compiler}/lib" make distclean defconfig all -j$(nproc --all) LLVM="$HOME/toolchains/{compiler}/bin" LLVM_IAS=1' -c 'make distclean' \
             --export-json x86.json
@@ -70,11 +74,15 @@ jobs:
           cd $HOME
           source <(curl -s "https://raw.githubusercontent.com/dakkshesh07/compiler-bench/main/compiler.list")
           for i in "${!compilers[@]}"; do   ${compilers[$i]}; done
-          compiler_list="${compilers[0]}"
+          printf -v compiler_list '%s,' "${compilers[@]}"
+          compiler_list=${compiler_list%,}
           cd "linux-${{ steps.kernel.outputs.krel }}"
           wget "https://raw.githubusercontent.com/Neutron-Toolchains/clang-build/main/patches/linux/6.1.6/20221118_yingchi_x86_fpu_Use__Alignof_to_avoid_undefined_behavior_in_TYPE_ALIGN.patch"
           patch -p1 < "20221118_yingchi_x86_fpu_Use__Alignof_to_avoid_undefined_behavior_in_TYPE_ALIGN.patch"
-          hyperfine -w 1 -r 3 -p '(sync; echo 3 | sudo tee /proc/sys/vm/drop_caches) && make distclean' \
+          echo Caching kernel source in ram...
+          for i in `find -type f`;        do              cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;     done
+          echo Starting benchmark...
+          hyperfine -w 2 -r 3 -p 'make distclean' \
             -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" 
             LD_LIBRARY_PATH="$HOME/toolchains/{compiler}/lib" make distclean defconfig all -j$(nproc --all) ARCH=arm64 LLVM="$HOME/toolchains/{compiler}/bin" LLVM_IAS=1' -c 'make distclean' \
             --export-json arm64.json
@@ -107,11 +115,15 @@ jobs:
           cd $HOME
           source <(curl -s "https://raw.githubusercontent.com/dakkshesh07/compiler-bench/main/compiler.list")
           for i in "${!compilers[@]}"; do   ${compilers[$i]}; done
-          compiler_list="${compilers[0]}"
+          printf -v compiler_list '%s,' "${compilers[@]}"
+          compiler_list=${compiler_list%,}
           cd "linux-${{ steps.kernel.outputs.krel }}"
           wget "https://raw.githubusercontent.com/Neutron-Toolchains/clang-build/main/patches/linux/6.1.6/20221118_yingchi_x86_fpu_Use__Alignof_to_avoid_undefined_behavior_in_TYPE_ALIGN.patch"
           patch -p1 < "20221118_yingchi_x86_fpu_Use__Alignof_to_avoid_undefined_behavior_in_TYPE_ALIGN.patch"
-          hyperfine -w 1 -r 3 -p '(sync; echo 3 | sudo tee /proc/sys/vm/drop_caches) && make distclean' \
+          echo Caching kernel source in ram...
+          for i in `find -type f`;        do              cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;     done
+          echo Starting benchmark...
+          hyperfine -w 2 -r 3 -p 'make distclean' \
             -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" 
             LD_LIBRARY_PATH="$HOME/toolchains/{compiler}/lib" make distclean defconfig all -j$(nproc --all) ARCH=arm LLVM="$HOME/toolchains/{compiler}/bin" LLVM_IAS=1' -c 'make distclean' \
             --export-json arm.json
