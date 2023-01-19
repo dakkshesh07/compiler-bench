@@ -1,6 +1,6 @@
 env:
     CIRRUS_CLONE_DEPTH: "1"
-    KREL: $(curl -sL "https://www.kernel.org" | grep -A 1 "latest_link" | tail -n +2 | sed 's|.*">||' | sed 's|</a>||')
+    KREL: 6.1.7
 
 trigger_type: manual
 timeout_in: 120m
