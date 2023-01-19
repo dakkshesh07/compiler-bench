@@ -1,4 +1,7 @@
-compilers=("r475365b"
+compilers=("cosmic"
+	"weebx"
+	"nfs"
+	"r475365b"
 	"trb"
 	"neutron")
 
