@@ -1,0 +1,62 @@
+env:
+    CIRRUS_CLONE_DEPTH: "1"
+    KREL: $(curl -sL "https://www.kernel.org" | grep -A 1 "latest_link" | tail -n +2 | sed 's|.*">||' | sed 's|</a>||')
+
+trigger_type: manual
+timeout_in: 120m
+container:
+  image: ghcr.io/neutron-projects/docker-image:arch-neutron
+  cpu: 8
+  memory: 32G
+
+x86_task:
+  name: Kernel Compilation (X86)
+
+  setup_env_script:
+      - cd $HOME
+      - wget "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KREL}.tar.xz"
+      - tar xf "linux-${KREL}.tar.xz"
+      - rm -rf "linux-${KREL}.tar.xz"
+
+  build_script:
+      - cd $HOME
+      - source <(curl -s "https://raw.githubusercontent.com/dakkshesh07/compiler-bench/main/compiler.list")
+      - for i in "${!compilers[@]}"; do   ${compilers[$i]}; done
+      - printf -v compiler_list '%s,' "${compilers[@]}"
+      - compiler_list=${compiler_list%,}
+      - cd "linux-${KREL}"
+      - wget "https://raw.githubusercontent.com/Neutron-Toolchains/clang-build/main/patches/linux/6.1.6/20221118_yingchi_x86_fpu_Use__Alignof_to_avoid_undefined_behavior_in_TYPE_ALIGN.patch"
+      - patch -p1 < "20221118_yingchi_x86_fpu_Use__Alignof_to_avoid_undefined_behavior_in_TYPE_ALIGN.patch"
+      - echo Caching kernel source in ram...
+      - for i in `find -type f`;        do              cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;     done
+      - echo Starting benchmark...
+      - hyperfine -w 2 -r 3 -p 'make distclean' -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" LD_LIBRARY_PATH="$HOME/toolchains/{compiler}/lib" make distclean defconfig all -j$(nproc --all) LLVM="$HOME/toolchains/{compiler}/bin" LLVM_IAS=1' -c 'make distclean' --export-json x86.json
+
+  artifacts:
+      path: "$HOME/linux-${KREL}/x86.json"
+      
+arm64_task:
+  name: Kernel Compilation (ARM64)
+
+  setup_env_script:
+      - cd $HOME
+      - wget "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KREL}.tar.xz"
+      - tar xf "linux-${KREL}.tar.xz"
+      - rm -rf "linux-${KREL}.tar.xz"
+
+  build_script:
+      - cd $HOME
+      - source <(curl -s "https://raw.githubusercontent.com/dakkshesh07/compiler-bench/main/compiler.list")
+      - for i in "${!compilers[@]}"; do   ${compilers[$i]}; done
+      - printf -v compiler_list '%s,' "${compilers[@]}"
+      - compiler_list=${compiler_list%,}
+      - cd "linux-${KREL}"
+      - wget "https://raw.githubusercontent.com/Neutron-Toolchains/clang-build/main/patches/linux/6.1.6/20221118_yingchi_x86_fpu_Use__Alignof_to_avoid_undefined_behavior_in_TYPE_ALIGN.patch"
+      - patch -p1 < "20221118_yingchi_x86_fpu_Use__Alignof_to_avoid_undefined_behavior_in_TYPE_ALIGN.patch"
+      - echo Caching kernel source in ram...
+      - for i in `find -type f`;        do              cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;     done
+      - echo Starting benchmark...
+      - hyperfine -w 2 -r 3 -p 'make distclean' -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" LD_LIBRARY_PATH="$HOME/toolchains/{compiler}/lib" make distclean defconfig all -j$(nproc --all) ARCH=arm64 LLVM="$HOME/toolchains/{compiler}/bin" LLVM_IAS=1 CROSS_COMPILE=aarch64-linux-gnu-' -c 'make distclean' --export-json arm64.json
+
+  artifacts:
+      path: "$HOME/linux-${KREL}/arm64.json"
