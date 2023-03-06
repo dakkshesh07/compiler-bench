@@ -1,5 +1,7 @@
 compilers=("weebx"
+	"trb"
 	"neutron"
+	"cosmic"
 	"nfs")
 
 neutron() {
