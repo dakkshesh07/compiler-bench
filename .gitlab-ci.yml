@@ -1,0 +1,52 @@
+image: ghcr.io/neutron-projects/docker-image:arch-neutron
+  
+before_script:
+    - git config --global user.email "dakkshesh5@gmail.com"
+    - git config --global user.name "Dakkshesh"
+    - git config --global http.postBuffer 524288000
+
+stages:
+    - build
+
+x86:
+    tags:
+        - bench-old
+    stage: build
+    script:
+        - nproc --all
+        - export KREL="6.2.2"
+        - source compiler.list
+        - cd $HOME
+        - mkdir toolchains
+        - wget "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KREL}.tar.xz"
+        - tar xf "linux-${KREL}.tar.xz"
+        - rm -rf "linux-${KREL}.tar.xz"
+        - for i in "${!compilers[@]}"; do   ${compilers[$i]}; done
+        - printf -v compiler_list '%s,' "${compilers[@]}"
+        - compiler_list=${compiler_list%,}
+        - cd "linux-${KREL}"
+        - for i in `find -type f`;        do              cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;     done
+        - hyperfine -w 2 -r 3 -p 'make distclean' -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" LD_LIBRARY_PATH="$HOME/toolchains/{compiler}/lib" make distclean defconfig all -j$(nproc --all) LLVM="$HOME/toolchains/{compiler}/bin" LLVM_IAS=1' -c 'make distclean' --export-json x86.json
+        - echo "" && cat x86.json
+
+
+arm64:
+    tags:
+        - bench
+    stage: build
+    script:
+        - nproc --all
+        - export KREL="6.2.2"
+        - source compiler.list
+        - cd $HOME
+        - mkdir toolchains
+        - wget "https://cdn.kernel.org/pub/linux/kernel/v6.x/linux-${KREL}.tar.xz"
+        - tar xf "linux-${KREL}.tar.xz"
+        - rm -rf "linux-${KREL}.tar.xz"
+        - for i in "${!compilers[@]}"; do   ${compilers[$i]}; done
+        - printf -v compiler_list '%s,' "${compilers[@]}"
+        - compiler_list=${compiler_list%,}
+        - cd "linux-${KREL}"
+        - for i in `find -type f`;        do              cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;             cat $i > /dev/null;     done
+        - hyperfine -w 2 -r 3 -p 'make distclean' -L compiler ${compiler_list} 'PATH="$HOME/toolchains/{compiler}/bin:${PATH}" LD_LIBRARY_PATH="$HOME/toolchains/{compiler}/lib" make distclean defconfig all -j$(nproc --all) ARCH=arm64 LLVM="$HOME/toolchains/{compiler}/bin" LLVM_IAS=1 CROSS_COMPILE=aarch64-linux-gnu-' -c 'make distclean' --export-json arm64.json
+        - echo "" && cat arm64.json
