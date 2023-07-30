@@ -1,10 +1,10 @@
 compilers=(
-	"r475365b"
-	"weebx"
-	"trb"
+	"r498229"
+	"greenforce"
+	"zyc"
 	"neutron"
 	"cosmic"
-	"nfs")
+	"weebx")
 
 neutron() {
 	mkdir -p "$HOME/toolchains/neutron"
@@ -17,8 +17,19 @@ git_repo_clone() {
 	git clone ${1} "$HOME/toolchains/${2}" ${3} --depth=1
 }
 
-proton() {
-	git_repo_clone "https://github.com/kdrag0n/proton-clang.git" "proton"
+greenforce() {
+	git_repo_clone "https://gitlab.com/fadlyas07/clang-llvm.git" "greenforce"
+}
+
+zyc() {
+	cd "$HOME/toolchains"
+	wget "$(curl -s https://raw.githubusercontent.com/ZyCromerZ/Clang/main/Clang-main-link.txt)" -O "zyc-clang.tar.gz"
+	mkdir zyc && tar -xf zyc-clang.tar.gz -C zyc && rm -rf zyc-clang.tar.gz
+	cd -
+}
+
+cosmic() {
+	git_repo_clone "https://gitlab.com/GhostMaster69-dev/cosmic-clang.git" "cosmic"
 }
 
 weebx() {
@@ -28,18 +39,6 @@ weebx() {
 	cd -
 }
 
-trb() {
-	git_repo_clone "https://gitlab.com/varunhardgamer/trb_clang.git" "trb"
-}
-
-cosmic() {
-	git_repo_clone "https://gitlab.com/GhostMaster69-dev/cosmic-clang.git" "cosmic"
-}
-
-nfs() {
-	git_repo_clone "https://pf.osdn.net/gitroot/n/nf/nfs86/NFS-clang.git" "nfs"
-}
-
-r475365b() {
-	git_repo_clone "https://gitlab.com/ThankYouMario/android_prebuilts_clang-standalone.git" "r475365b" "-b 16"
+r498229() {
+	git_repo_clone "https://gitlab.com/neilchetty/platform_prebuilts_clang_host_linux-x86_clang.git" "r498229"
 }
