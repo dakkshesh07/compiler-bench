@@ -12,16 +12,19 @@ compilers=(
     "playground"
     "cosmic")
 
-echo "Toolchain Details" >tcinfo.txt
-
 for i in "${!compilers[@]}"; do
+    ${compilers[$i]}
+done
+
+echo "Toolchain Details" >tcinfo.txt
+for i in "${compilers[@]}"; do
     {
         echo ""
         echo "${i}:"
         "${TC_DIR}"/"${i}"/bin/clang --version
     } >>tcinfo.txt
-    ${compilers[$i]}
 done
+
 printf -v compiler_list '%s,' "${compilers[@]}"
 compiler_list=${compiler_list%,}
 
